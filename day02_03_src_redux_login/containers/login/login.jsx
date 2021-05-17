@@ -1,15 +1,43 @@
 import React,{Component} from 'react'
-import { Form, Input, Button} from 'antd';
+import { Form, Input, Button, message} from 'antd';
 import { GitlabOutlined, LockOutlined} from '@ant-design/icons';
+import {connect} from 'react-redux'
+import {Redirect} from 'react-router-dom'
+
+import {reqLogin} from '../../api'
+import {saveUserInfoAction} from '../../redux/action_creators/login_actions'
 import './css/login.less'
 import logo from './imgs/logo.png'
 
-export default class Login extends Component{
+ class Login extends Component{
 
-    onFinish = (value)=>{
+    componentDidMount() {
+      console.log(this.props)
+    }
+
+    onFinish = async(values)=>{
+      console.log('----onFinish---')
       // 像服务器发送登录请求
-      console.log('sucess:' + value)
+      // console.log('sucess:' + values)
+      const {username, password} = values
+
+      let result = await reqLogin(username,password)
+      console.log('请求回来的结果：',result)
+      const {status, msg} = result
+      if(status === 0){
+        // 请求成功，跳转 admin
+        console.log('resSucess')
+        // 1.服务器返回的 user和token，交给redux管理
+        this.props.saveUserInfo(result.data)
+        // 2.跳转 admin 页面
+        this.props.history.replace('/admin')
+      }else{
+        // 请求失败，弹窗提示
+        message.warning(msg,1)
+        console.log('error', msg)
+      }
     } 
+
     onFinishFailed = (errorInfo)=>{
       console.log('Failed:', errorInfo);
     }
@@ -31,7 +59,11 @@ export default class Login extends Component{
       })
     
     render(){
-      
+      const {isLogin} = this.props
+      console.log(isLogin)
+      if(isLogin){
+        return <Redirect to='/admin'/>
+      }
       return(
         <div className='login'>
           <header>
@@ -106,5 +138,11 @@ export default class Login extends Component{
     }
 }
 
+export default connect(
+  state => ({isLogin:state.userInfo.isLogin}),
+  {
+    saveUserInfo:saveUserInfoAction,
+  }
+)(Login)
 
 
