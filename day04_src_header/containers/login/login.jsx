@@ -7,7 +7,7 @@ import {Redirect} from 'react-router-dom'
 import {reqLogin} from '../../api'
 import {saveUserInfoAction} from '../../redux/action_creators/login_actions'
 import './css/login.less'
-import logo from '../../static/imgs/logo.png'
+import logo from './imgs/logo.png'
 
 @connect(
   state => ({isLogin:state.userInfo.isLogin}),

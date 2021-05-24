@@ -14,7 +14,6 @@ import Role from '../../containers/role/role'
 import Bar from '../../containers/bar/bar'
 import Line from '../../containers/line/line'
 import Pie from '../../containers/pie/pie'
-import LeftNav from './left_nav/left_nav'
 
 import './css/admin.less'
 const { Footer, Sider, Content } = Layout
@@ -45,9 +44,7 @@ class Admin extends Component{
     }
     return(
       <Layout className="admin">
-        <Sider className="sider">
-          <LeftNav/>
-        </Sider>
+        <Sider className="sider">Sider</Sider>
         <Layout>
           <Header/>
           <Content className="content">
