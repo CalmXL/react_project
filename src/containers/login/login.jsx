@@ -11,7 +11,7 @@ import logo from '../../static/imgs/logo.png'
 
 @connect(
   state => ({isLogin:state.userInfo.isLogin}),
-  {saveUserInfo:saveUserInfoAction,}
+  {saveUserInfo:saveUserInfoAction}
 )
  class Login extends Component{
 
@@ -20,9 +20,8 @@ import logo from '../../static/imgs/logo.png'
     }
 
     onFinish = async(values)=>{
-      // console.log('----onFinish---')
+      
       // 像服务器发送登录请求
-      // console.log('sucess:' + values)
       const {username, password} = values
 
       let result = await reqLogin(username,password)
@@ -33,7 +32,7 @@ import logo from '../../static/imgs/logo.png'
         // 1.服务器返回的 user和token，交给redux管理
         this.props.saveUserInfo(result.data)
         // 2.跳转 admin 页面
-        this.props.history.replace('/admin')
+        this.props.history.replace('/admin/home')
       }else{
         // 请求失败，弹窗提示
         message.warning(msg,1)
@@ -56,7 +55,6 @@ import logo from '../../static/imgs/logo.png'
           }else if(!(/^\w+$/).test(value)){
             return Promise.reject(new Error('密码必须是数字、字母、下划线'))
           }
-  
           return Promise.resolve()
         }
       })
@@ -64,7 +62,7 @@ import logo from '../../static/imgs/logo.png'
     render(){
       const {isLogin} = this.props
       if(isLogin){
-        return <Redirect to='/admin'/>
+        return <Redirect to='/admin/home'/>
       }
       return(
         <div className='login'>

@@ -1,0 +1,8 @@
+.list .item {
+  display: flex;
+  justify-content: flex-start;
+}
+.list .item .item-left {
+  font-size: 25px;
+  font-weight: bold;
+}
