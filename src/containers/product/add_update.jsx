@@ -3,7 +3,7 @@ import {Button, Card,Form,Input,message,Select} from 'antd'
 import {ArrowLeftOutlined} from '@ant-design/icons'
 import {connect} from 'react-redux'
 
-import {reqCategoryList,reqAddProduct,reqProductById} from '../../api'
+import {reqCategoryList,reqAddProduct,reqProductById,reqUPdateProduct} from '../../api'
 import PicturesWall from './pictures_wall'
 import RichTextEditor from './rich_text_editor'
 
@@ -42,7 +42,7 @@ class AddUpdate extends Component{
     // ! 获取参数id,判断是add 还是 update
     const id = this.props.match.params.id 
     if(id){
-      this.setState({operType:'update'})
+      this.setState({operType:'update',_id:id})
       if(reduxProductList.length){ // redux中存有商品列表
         let result = reduxProductList.find((item)=>{
           return item._id === id
@@ -82,23 +82,36 @@ class AddUpdate extends Component{
     if(status === 0) this.setState({categoryList:data})
     else message.error(msg,1)
   }
-
+  // ? 提交 -- 修改or添加
   onFinish = async(values)=>{
     // console.log(this.picRef.current.getPicArr())
     // console.log(this.richRef.current.getRichText())
+    const {operType,_id} = this.state
     let imgs = this.picRef.current.getPicArr()
-    console.log(imgs)
+    // console.log(imgs)
     let richText = this.richRef.current.getRichText()
-    let result = await reqAddProduct({...values,imgs,detail:richText})
-    const {status,msg} = result
-    if(status === 0){
-      message.success('商品添加成功')
-      this.props.history.goBack()
+    // ? 操作状态: add
+    if(operType === 'add'){
+      console.log('---add---')
+      let result = await reqAddProduct({...values,imgs,detail:richText})
+      const {status,msg} = result
+      if(status === 0){
+        message.success('商品添加成功')
+        this.props.history.goBack()
+      }
+      else message.error(msg,1)
     }
-    else message.error(msg,1)
-
-    console.log(result)
-    
+    // ? 操作状态: update
+    if(operType === 'update'){
+      console.log('---update----')
+      let result = await reqUPdateProduct({...values,imgs,detail:richText,_id})
+      const {status,msg} = result
+      if(status === 0){
+        message.success('商品修改成功')
+        this.props.history.goBack()
+      }
+      else message.error(msg,1)
+    }
   }
 
   onFinishFailed = ()=>{

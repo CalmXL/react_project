@@ -2,12 +2,16 @@ import React,{Component, createRef} from 'react'
 import {Card,Button,Table,Modal,Input,Form, message} from 'antd'
 import dayjs from 'dayjs'
 import { Tree } from 'antd';
+import {connect} from 'react-redux'
 
-import {reqRoleList,reqAddRole} from '../../api'
+import {reqRoleList,reqAddRole,reqUpdateRole} from '../../api'
 import {menuList} from '../../config/menu_config'
-import { TreeNode } from 'antd/lib/tree-select';
 
-export default class Role extends Component{
+@connect(
+  state => ({_id:state.userInfo.user._id,auth_name:state.userInfo.user.username}),
+  {}
+)
+class Role extends Component{
 
   inputRef = createRef()
 
@@ -16,7 +20,7 @@ export default class Role extends Component{
     isControl:false, // 设置权限弹窗
     roleList:[],
     // expandedKeys:[], // ? 配置是否默认打开某个节点
-    checkedKeys:[],
+    checkedKeys:[], // ? 勾选的树节点
     selectedKeys:[],
     menuList
   }
@@ -61,14 +65,30 @@ export default class Role extends Component{
     })
   }
   // ? 授权弹窗
-  ShowControl = ()=>{
-    this.setState({isControl:true})
+  ShowControl = (_id)=>{
+    const {roleList} = this.state
+    let result = roleList.find((item)=>{
+      return item._id === _id
+    })
+    if(result){
+      this.setState({checkedKeys:result.menus})
+    }
+    this.setState({isControl:true,_id})
   }
   // ? 授权弹窗-提交按钮
-  handleControlOk = ()=>{
-    this.setState({
-      isControl:false
-    })
+  handleControlOk = async()=>{
+    // 发送请求更新权限N
+    const {auth_name} = this.props
+    const {_id,checkedKeys} = this.state
+    console.log(auth_name,this.state.checkedKeys)
+    let result = await reqUpdateRole({_id,auth_name,menus:checkedKeys})
+    const {status,data,msg} = result
+    if(status === 0){
+      message.success('角色授权成功')
+      this.setState({
+        isControl:false,
+      })
+    }else message.error(msg,1)
   }
   // ? 授权弹窗-取消按钮
   handleControlCancel = ()=>{
@@ -123,11 +143,11 @@ export default class Role extends Component{
       },
       {
         title: '操作',
-        dataIndex: 'operation',
+        // dataIndex: 'operation',
         key: 'operation',
-        render:()=>{
+        render:(item)=>{
           return (
-            <Button onClick={this.ShowControl} type='link'>
+            <Button onClick={()=>{this.ShowControl(item._id)}} type='link'>
               设置权限
             </Button>
           )
@@ -162,7 +182,7 @@ export default class Role extends Component{
           cancelText="取消"
           okText="确定"
           title="添加角色" 
-          visible={this.state.isShow} 
+          visible={this.state.isAddAuth} 
           onOk={this.handleAuthOk} 
           onCancel={this.handleAuthCancel}
         >
@@ -210,3 +230,5 @@ export default class Role extends Component{
     )
   }
 }
+
+export default Role

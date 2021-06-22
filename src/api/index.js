@@ -63,12 +63,43 @@ export const reqAddProduct = (productObj) => {
   return myAxios.post(`${BASE_URL}/manage/product/add`,{...productObj})
 }
 
+// 更新商品
+export const reqUPdateProduct = (productObj) => {
+  console.log(productObj)
+  return myAxios.post(`${BASE_URL}/manage/product/update`,{...productObj})
+}
+
 // 请求获取角色列表
 export const reqRoleList = () => 
 myAxios.get(`${BASE_URL}/manage/role/list`)
 
 // 添加角色
 export const reqAddRole = (roleName)=> myAxios.post(`${BASE_URL}/manage/role/add`,{roleName})
+
+// 更新角色功能
+export const reqUpdateRole = (obj) => 
+myAxios.post(`${BASE_URL}/manage/role/update`,{...obj,auth_time:Date.now()})
+
+// 获取所有用户列表
+export const reqUserList = () => 
+myAxios.get(`${BASE_URL}/manage/user/list`)
+
+// 添加用户
+export const reqAddUser = (obj) => 
+myAxios.post(`${BASE_URL}/manage/user/add`,{...obj})
+
+// 更新用户
+export const reqUpdateUser = (obj) =>{
+  console.log(obj)
+  return myAxios.post(`${BASE_URL}/manage/user/update`,{...obj})
+} 
+
+// 删除用户
+export const reqDeleteUser = (userId) => 
+myAxios.post(`${BASE_URL}/manage/user/delete`,{userId})
+
+
+
 
 
 
